@@ -1,10 +1,18 @@
+#include <unistd.h>
+#include <pigpio.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define PIN 17
+
 void clear_input_buffer(void) {
   int c;
   while ((c = getchar()) != '\n' && c != EOF);
 }
-int main(void) {
-  double min_temp = 68;
+
+int main(int argc, char *argv[])
+{
+    double min_temp = 68;
   double max_temp = 74;
   printf("Default acceptable range: %.1f°F to %.1f°F\n", min_temp, max_temp);
   printf("Would you like to change the acceptable range? (y/n): ");
@@ -33,7 +41,76 @@ int main(void) {
     }
   }
   clear_input_buffer();
-  printf("Current range is %.2lf to %.2lf", 
-         &min_temp, &max_temp);
-  return 0;
+  printf("Current range is %.2lf to %.2lf", min_temp, max_temp);
+    //Open temperature file in append mode.
+    FILE *file = fopen("temperature.txt", "w");
+    if(file == NULL){
+        perror("Failed to open file");
+        return 1;
+    }
+    
+    char input[100];
+
+    //Prompt user for temperature input.
+    while(1){
+        printf("Input temperature Fahrenheit: ");
+        fgets(input, sizeof(input), stdin);
+        fprintf(file, "%s", input);
+        if(strcmp(input, "exit\n") == 0){
+            break;
+        }
+    }
+    fclose(file);
+
+    //Open temperature file in read mode.
+    file = fopen("temperature.txt", "r");
+    if(file == NULL){
+        perror("Failed to open file");
+        return 1;
+    }
+
+    char line[256];
+
+    gpioInitialise();
+    gpioSetMode(PIN, PI_OUTPUT);
+    
+    while(fgets(line, sizeof(line), file) != NULL){
+        line[strcspn(line, "\r\n")] = '\0';
+
+        //Check if the line is the exit command.
+        if(strcmp(line, "exit") == 0){
+            //Remove the exit line from the file.
+            break;
+        }
+
+        char *endptr;
+        double temp = strtod(line, &endptr);
+
+        if(*endptr != '\0' || endptr == line){
+            fprintf(stderr, "Invalid temperature: %s\n", line);
+            continue;
+        }
+
+        //Check if the temperature is within the normal range.
+        if(temp > max_temp || temp < min_temp){
+            printf("%0.2lf F.  WARNING", temp);
+            fprintf(file, "WARNING\n");
+
+            gpioWrite(PIN, 1); //LED ON
+            getchar();
+        }
+        else{
+            printf("%0.2lf F.  NORMAL\n", temp);
+            fprintf(file, "NORMAL\n");
+            gpioWrite(PIN, 0); //LED OFF
+            getchar();
+        }
+
+    }
+    fclose(file);
+    
+    printf("LED OFF\n");
+    gpioWrite(PIN, 0); //LED OFF
+    gpioTerminate();
+    return 0;
 }
