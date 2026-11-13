@@ -1,8 +1,4 @@
-# Raspberry Pi Temperature Monitor
-
-A C-based temperature monitoring system for the Raspberry Pi that validates user-entered Fahrenheit readings through a configurable range, controls a physical warning LED, and logs session data.
-
-## Functional Requirements
+# Functional Requirements
 
 - **User Input:** Accept multiple user entered temperatures readings in fahrenheit
 - **Threshold Evaluation:** Determine if the temperature reading is between 68°F-76°F inclusive
