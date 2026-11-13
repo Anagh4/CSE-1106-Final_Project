@@ -1,8 +1,13 @@
-Requirements
-1. Accept multiple user entered temperatures readings in fahrenheit
-2. Determine if the temperature reading is between 68°F-76°F inclusive
-3. Display a NORMAL or WARNING status
-4. Calculate the average of the recorded temperatures
-5. Save the temperature readings and statuses to a file
-6. Use LED connected to Raspberry Pi to indicate warining
-7. Allow client to change acceptable temperature range
+# Raspberry Pi Temperature Monitor
+
+A C-based temperature monitoring system for the Raspberry Pi that validates user-entered Fahrenheit readings through a configurable range, controls a physical warning LED, and logs session data.
+
+## Functional Requirements
+
+- **User Input:** Accept multiple user entered temperatures readings in fahrenheit
+- **Threshold Evaluation:** Determine if the temperature reading is between 68°F-76°F inclusive
+- **Status Display:** Display a NORMAL or WARNING status
+- **Data Calculation:** Calculate the average of the recorded temperatures
+- **File Logging:** Save the temperature readings and statuses to a file
+- **Hardware Indicator:** Use LED connected to Raspberry Pi to indicate warining
+- **Configurable Range:** Allow client to change acceptable temperature range
