@@ -13,7 +13,7 @@ void clear_input_buffer(void) {
 int main(int argc, char *argv[])
 {
     double min_temp = 68;
-  double max_temp = 74;
+  double max_temp = 76;
   printf("Default acceptable range: %.1f°F to %.1f°F\n", min_temp, max_temp);
   printf("Would you like to change the acceptable range? (y/n): ");
   char choice;
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     }
   }
   clear_input_buffer();
-  printf("Current range is %.2lf to %.2lf", min_temp, max_temp);
+  printf("Current range is %.2lf to %.2lf\n", min_temp, max_temp);
     //Open temperature file in append mode.
     FILE *file = fopen("temperature.txt", "w");
     if(file == NULL){
@@ -70,6 +70,8 @@ int main(int argc, char *argv[])
     }
 
     char line[256];
+    double average = 0;
+    int count = 0;
 
     gpioInitialise();
     gpioSetMode(PIN, PI_OUTPUT);
@@ -95,17 +97,26 @@ int main(int argc, char *argv[])
         if(temp > max_temp || temp < min_temp){
             printf("%0.2lf F.  WARNING", temp);
             fprintf(file, "WARNING\n");
-
+            average += temp;
+            count++;
             gpioWrite(PIN, 1); //LED ON
             getchar();
         }
         else{
             printf("%0.2lf F.  NORMAL\n", temp);
             fprintf(file, "NORMAL\n");
+            average += temp;
+            count++;
             gpioWrite(PIN, 0); //LED OFF
             getchar();
         }
 
+
+
+    }
+    if(count > 0){
+        average /= count;
+        printf("Average temperature: %0.2lf F\n", average);
     }
     fclose(file);
     
