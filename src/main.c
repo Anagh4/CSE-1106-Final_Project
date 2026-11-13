@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
             getchar();
         }
         else{
-            printf("%0.2lf F.  NORMAL\n", temp);
+            printf("%0.2lf F.  NORMAL", temp);
             fprintf(file, "NORMAL\n");
             average += temp;
             count++;
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
         printf("Average temperature: %0.2lf F\n", average);
     }
     fclose(file);
-    
+    printf("Exit");
     printf("LED OFF\n");
     gpioWrite(PIN, 0); //LED OFF
     gpioTerminate();
